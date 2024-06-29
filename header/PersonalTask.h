@@ -11,5 +11,8 @@ public:
 	void printTask() const override;
 
 	Task* clone() const override;
+
+	void save(std::ofstream& ofs) const override;
+	void load(std::ifstream& ifs) override;
 };
 
