@@ -364,7 +364,7 @@ void TaskManager::logout()
 
 void TaskManager::exit()
 {
-	//saveUsersData();
+	saveUsersData();
 	//saveCollaborationsData();
 	std::cout << "Exited successfully!\n";
 }
@@ -496,7 +496,7 @@ void TaskManager::assignTaskToCollaboration(const String& collaborationName, con
 				{
 					if (users[j].getUsername() == username)
 					{
-						CollaborationTask* newTask = new CollaborationTask(taskName, description, users[j], due_date);
+						CollaborationTask* newTask = new CollaborationTask(taskName, description, username, due_date);
 						collaborations[i].addTask(newTask);
 						users[j].getTasksInstance().push_back(newTask);
 						std::cout << "Task assigned successfully to collaboration!\n";
@@ -539,6 +539,7 @@ void TaskManager::listCollaborationTasks(const String& collaborationName)
 				return;
 			}
 		}
+
 		std::cout << "Collaboration not found.\n";
 	}
 	else
