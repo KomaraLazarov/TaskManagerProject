@@ -3,6 +3,7 @@
 #include "String.h"
 #include "sstream"
 #include <iomanip>
+#include <fstream>
 
 const char* Utility::getStatus(Status status)
 {
@@ -120,4 +121,14 @@ void Utility::formatTmTypeDate(const String& date, std::tm& formatedDate)
 {
 	std::stringstream ss(date.c_str());
 	ss >> std::get_time(&formatedDate, "%Y-%m-%d");
+}
+
+void Utility::loadStringFromFile(std::ifstream& ifs, String& string)
+{
+	size_t size = 0;
+	ifs.read(reinterpret_cast<char*>(&size), sizeof(size_t));
+	char* currentUsername = new char[size + 1];
+	ifs.read((char*)(&*currentUsername), size + 1);
+	string = currentUsername;
+	delete currentUsername;
 }
