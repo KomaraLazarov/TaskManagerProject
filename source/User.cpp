@@ -1,4 +1,8 @@
 #include "User.h"
+#include "Utility.h"
+#include "PolimorphicPtr.hpp"
+#include "PersonalTask.h"
+#include "CollaborationTask.h"
 
 User::User(const String& username, const String& password)
 	: username(username), password(password)
@@ -44,39 +48,61 @@ Dashboard& User::getDashboardInstance()
     return dashboard;
 }
 
-void User::save(std::ofstream& out) const
+void User::save(std::ofstream& ofs) const
 {
     size_t usernameSize = username.getSize();
-    out.write(reinterpret_cast<const char*>(&usernameSize), sizeof(usernameSize));
-    out.write(username.c_str(), usernameSize + 1);
+    ofs.write(reinterpret_cast<const char*>(&usernameSize), sizeof(usernameSize));
+    ofs.write(username.c_str(), usernameSize + 1);
 
     size_t passwordSize = password.getSize();
-    out.write(reinterpret_cast<const char*>(&passwordSize), sizeof(passwordSize));
-    out.write(password.c_str(), passwordSize + 1);
+    ofs.write(reinterpret_cast<const char*>(&passwordSize), sizeof(passwordSize));
+    ofs.write(password.c_str(), passwordSize + 1);
 
-    //out.write(reinterpret_cast<const char*>(&tasks), sizeof(Vector<Polymorphic_Ptr<Task>>));
+    size_t tasksSize = tasks.getSize();
+    ofs.write(reinterpret_cast<const char*>(&tasksSize), sizeof(tasksSize));
+    for (size_t i = 0; i < tasksSize; i++)
+    {
+        tasks[i]->save(ofs);
+    }
 
-    /*out.write(reinterpret_cast<const char*>(&dashboard), sizeof(Dashboard));*/
+    //ofs.write(reinterpret_cast<const char*>(&tasks), sizeof(Vector<Polymorphic_Ptr<Task>>));
+
+    /*ofs.write(reinterpret_cast<const char*>(&dashboard), sizeof(Dashboard));*/
 }
 
-void User::load(std::ifstream& in)
+void User::load(std::ifstream& ifs)
 {
-    loadStringFromFile(in, username);
-    loadStringFromFile(in, password);
+    Utility::loadStringFromFile(ifs, username);
+    Utility::loadStringFromFile(ifs, password);
+
+    size_t tasksSize;
+    ifs.read(reinterpret_cast<char*>(&tasksSize), sizeof(tasksSize));
+    for (size_t i = 0; i < tasksSize; i++)
+    {
+        char taskType;
+        ifs.read(&taskType, 1);
+        Polymorphic_Ptr<Task> task;
+
+        if (taskType == 'P')
+        {
+            task = new PersonalTask();
+        }
+        else if (taskType == 'C')
+        {
+            task = new CollaborationTask();
+        }
+        else {
+            std::cout << "Unknown task type in file!" << std::endl;
+            continue;
+        }
+
+        task->load(ifs);
+        tasks.push_back(task);
+    }
 
     /*in.read(reinterpret_cast<char*>(&tasks), sizeof(Vector<Polymorphic_Ptr<Task>>));
 
     in.read(reinterpret_cast<char*>(&dashboard), sizeof(Dashboard));*/
-}
-
-void User::loadStringFromFile(std::ifstream& in, String& string)
-{
-    size_t size = 0;
-    in.read(reinterpret_cast<char*>(&size), sizeof(size_t));
-    char* currentUsername = new char[size + 1];
-    in.read((char*)(&*currentUsername), size + 1);
-    string = currentUsername;
-    delete currentUsername;
 }
 
 void User::printTasks() const 
