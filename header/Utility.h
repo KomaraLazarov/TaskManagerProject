@@ -14,4 +14,5 @@ public:
 	static bool isDate(const String& str);
 	static bool pastDate(const std::tm* currentDate, const std::tm* comparedDate);
 	static void formatTmTypeDate(const String& date, std::tm& formatedDate);
+	static void loadStringFromFile(std::ifstream& ifs, String& string);
 };
