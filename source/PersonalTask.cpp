@@ -1,6 +1,8 @@
 #include "PersonalTask.h"
 #include "Utility.h"
 #include <iomanip>
+#include <fstream>
+#include "User.h"
 
 PersonalTask::PersonalTask() : Task()
 {
@@ -23,4 +25,16 @@ void PersonalTask::printTask() const
 Task* PersonalTask::clone() const
 {
 	return new PersonalTask(*this);
+}
+
+void PersonalTask::save(std::ofstream& ofs) const 
+{
+    ofs.write("P", 1);
+
+    Task::save(ofs);
+}
+
+void PersonalTask::load(std::ifstream& ifs)
+{
+    Task::load(ifs);
 }
