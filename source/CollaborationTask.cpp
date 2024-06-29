@@ -1,24 +1,25 @@
 #include "CollaborationTask.h"
 #include "Utility.h"
+#include "User.h"
 #include <iomanip>
 
 CollaborationTask::CollaborationTask() : Task()
 {
 }
 
-CollaborationTask::CollaborationTask(const String& name, const String& description, const User& assignee, const String& due_date_str)
-	:Task(name, description, due_date_str), assignee(assignee)
+CollaborationTask::CollaborationTask(const String& name, const String& description, const String& assigneeUsername, const String& due_date_str)
+	:Task(name, description, due_date_str), assigneeUsername(assigneeUsername)
 {
 }
 
-User CollaborationTask::getAssignee() const
+const String& CollaborationTask::getAssignee() const
 {
-	return assignee;
+	return assigneeUsername;
 }
 
-void CollaborationTask::setAssignee(const User& assignee)
+void CollaborationTask::setAssignee(const String& assigneeUsername)
 {
-	this->assignee = assignee;
+	this->assigneeUsername = assigneeUsername;
 }
 
 void CollaborationTask::printTask() const
@@ -28,7 +29,24 @@ void CollaborationTask::printTask() const
 		<< "Due Date: " << std::put_time(&due_date, "%a %b %d %H:%M:%S %Y") << "\n"
 		<< "Status: " << Utility::getStatus(status) << "\n"
 		<< "Description: " << description << "\n"
-		<< "Assignee: " << assignee.getUsername() << "\n";
+		<< "Assignee: " << assigneeUsername.c_str() << "\n";
+}
+
+void CollaborationTask::save(std::ofstream& ofs) const
+{
+	ofs.write("C", 1);
+
+	size_t nameSize = assigneeUsername.getSize();
+	ofs.write(reinterpret_cast<const char*>(&nameSize), sizeof(nameSize));
+	ofs.write(assigneeUsername.c_str(), nameSize + 1);
+
+	Task::save(ofs);
+}
+
+void CollaborationTask::load(std::ifstream& ifs)
+{
+	Utility::loadStringFromFile(ifs, assigneeUsername);
+	Task::load(ifs);
 }
 
 Task* CollaborationTask::clone() const
