@@ -13,8 +13,6 @@ private:
 	Vector<Polymorphic_Ptr<Task>> tasks;
 	Dashboard dashboard;
 
-	void loadStringFromFile(std::ifstream& in, String& string);
-
 public:
 	User() = default;
 	User(const String& username, const String& password);
@@ -30,8 +28,8 @@ public:
 	Vector<Polymorphic_Ptr<Task>>& getTasksInstance();
 	Dashboard& getDashboardInstance();
 
-	void save(std::ofstream& out) const;
-	void load(std::ifstream& in);
+	void save(std::ofstream& ofs) const;
+	void load(std::ifstream& ifs);
 
 	void printTasks() const;
 };
