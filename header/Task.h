@@ -31,5 +31,8 @@ public:
     virtual Task* clone() const = 0;
     virtual void printTask() const = 0;
 
+    virtual void save(std::ofstream& ofs) const;
+    virtual void load(std::ifstream& ifs);
+
     virtual ~Task() = default;
 };
