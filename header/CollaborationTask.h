@@ -5,15 +5,18 @@
 class CollaborationTask: public Task
 {
 private:
-	User assignee;
+	String assigneeUsername;
 
 public :
     CollaborationTask();
-    CollaborationTask(const String& name, const String& description, const User& assignee, const String& due_date_str = "");
+    CollaborationTask(const String& name, const String& description, const String& assigneeUsername, const String& due_date_str = "");
 
-    User getAssignee() const;
-    void setAssignee(const User& assignee);
+    const String& getAssignee() const;
+    void setAssignee(const String& assigneeUsername);
     void printTask() const override;
+
+    void save(std::ofstream& ofs) const override;
+    void load(std::ifstream& ifs) override;
 
     Task* clone() const override;
 };
